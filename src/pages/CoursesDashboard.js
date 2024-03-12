@@ -79,7 +79,7 @@ const CoursesDashboard = ({ selectedCourse }) => {
 							{selectedCourse.description}
 						</Typography>
 					</Box>
-					<iframe src="https://drive.google.com/file/d/1yKfXIiMuYgFGixktM8PUTb6ODhP8-dE9/preview?usp=sharing" style={{ width: '100%', height: '60%' }}></iframe>
+					<iframe src={selectedCourse.pdfUrl} style={{ width: '100%', height: '60%' }}></iframe>
 				</Box>
 			) : (
 				<Typography variant="body1" sx={{ color: theme.colors.black }}>

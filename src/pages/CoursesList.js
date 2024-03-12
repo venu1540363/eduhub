@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from "react";
 import Box from "@mui/material/Box";
-import { List, ListItemButton, ListItemText, Collapse, Button } from "@mui/material";
+import { List, ListItemButton, ListItemText, Collapse, Button, Typography } from "@mui/material";
 import { KeyboardArrowRight, ExpandMore, Logout } from "@mui/icons-material";
 import classes from "../assets/styles/courses";
 import { useTheme } from "@mui/material/styles";
-// import { useHistory } from "react-router-dom"
+// import { useHistory } from "react-router-dom";
+import LinearProgressWithLabel from "./LinearProgressWithLabel";
 
 const CoursesList = ({ onSelectCourse }) => {
 	const theme = useTheme();
@@ -13,11 +14,31 @@ const CoursesList = ({ onSelectCourse }) => {
 	const [courses, setCourses] = useState({});
 	const [openCategories, setOpenCategories] = useState({});
 	const [selectedCourse, setSelectedCourse] = useState(null);
+	const [courseProgress, setCourseProgress] = useState({});
+
+	const increment = (60 * 60) / 1000
 
 	useEffect(() => {
 		fetchCategories();
 		fetchCourses();
 	}, []);
+
+	useEffect(() => {
+		const activeCourse = selectedCourse;
+		if (activeCourse) {
+			const timer = setInterval(() => {
+				setCourseProgress(prevProgress => ({
+					...prevProgress,
+					[activeCourse.uuid]: Math.min(
+						prevProgress[activeCourse.uuid] + increment, // Update by calculated increment
+						activeCourse.readTime
+					)
+				}));
+			}, 1000); // Update every second
+
+			return () => clearInterval(timer);
+		}
+	}, [selectedCourse]);
 
 	const fetchCategories = async () => {
 		try {
@@ -55,9 +76,13 @@ const CoursesList = ({ onSelectCourse }) => {
 		}));
 	};
 
-	const handleSelectCourse = course => {
-		setSelectedCourse(course);
-	};
+	// const handleSelectCourse = course => {
+	// 	// setSelectedCourse(course);
+	// 	setCourseProgress(prevProgress => ({
+	// 		...prevProgress,
+	// 		[course.uuid]: 0
+	// 	}));
+	// };
 
 	const handleLogout = () => {
 		// Clear all state
@@ -91,13 +116,22 @@ const CoursesList = ({ onSelectCourse }) => {
 							<List sx={{ paddingLeft: theme.padding.medium }}>
 								{courses && courses[category.categoryId] &&
 									courses[category.categoryId].map(course => (
-										<ListItemButton
-											key={course.uuid}
-											sx={{ color: theme.colors.lightText }}
-											onClick={() => onSelectCourse(course)}
-										>
-											<ListItemText primary={course.name} />
-										</ListItemButton>
+										<>
+											<ListItemButton
+												key={course.uuid}
+												sx={{ color: theme.colors.lightText }}
+												onClick={() => onSelectCourse(course)}
+											>
+												<ListItemText primary={course.name} />
+											</ListItemButton>
+											{
+												course.readTime <= courseProgress[course.uuid] ? (
+													<Typography variant="body2">Complete</Typography>
+												) : (
+													<LinearProgressWithLabel value={courseProgress[course.uuid] * 100 / course.readTime} />
+												)
+											}
+										</>
 									))}
 							</List>
 						</Collapse>

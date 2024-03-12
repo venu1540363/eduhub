@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import Box from "@mui/material/Box";
-import { Typography, Dialog, Button } from "@mui/material";
+import { Typography, Dialog, Button, TextField } from "@mui/material";
 import { PDFViewer } from "@react-pdf/renderer";
 import MyDocument from "../assets/Pdf";
 import classes from "../assets/styles/courses";
@@ -12,6 +12,7 @@ const CoursesDashboard = ({ selectedCourse }) => {
 	const [startTime, setStartTime] = useState(null);
 	const [endTime, setEndTime] = useState(null);
 	const [showPopup, setShowPopup] = useState(false);
+	const [uploadedFile, setUploadedFile] = useState(null);
 
 	useEffect(() => {
 		setStartTime(performance.now());
@@ -78,11 +79,7 @@ const CoursesDashboard = ({ selectedCourse }) => {
 							{selectedCourse.description}
 						</Typography>
 					</Box>
-					<PDFViewer
-						style={{ ...classes.container }}
-					>
-						<MyDocument />
-					</PDFViewer>
+					<iframe src="https://drive.google.com/file/d/1yKfXIiMuYgFGixktM8PUTb6ODhP8-dE9/preview?usp=sharing" style={{ width: '100%', height: '60%' }}></iframe>
 				</Box>
 			) : (
 				<Typography variant="body1" sx={{ color: theme.colors.black }}>

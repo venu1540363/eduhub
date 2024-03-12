@@ -8,7 +8,10 @@ const classes = {
 		width: "20%",
 	},
 	dashboard: {
-		width: "80%"
+		width: "80%",
+		height: '100vh',
+		overflowY: 'auto',
+		overflowX: 'hidden'
 	},
 	container: {
 		width: "100%"

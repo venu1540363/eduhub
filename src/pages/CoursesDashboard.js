@@ -73,7 +73,7 @@ const CoursesDashboard = ({ selectedCourse }) => {
 						</Typography>
 						<Typography variant="body1" sx={{
 							color: theme.colors.text,
-							padding: theme.padding.medium
+							padding: theme.padding.medium,
 						}}>
 							{selectedCourse.description}
 						</Typography>
@@ -85,7 +85,7 @@ const CoursesDashboard = ({ selectedCourse }) => {
 					</PDFViewer>
 				</Box>
 			) : (
-				<Typography variant="body1" sx={{ color: theme.colors.black, bgcolor: "red" }}>
+				<Typography variant="body1" sx={{ color: theme.colors.black }}>
 					Please select a course from the list.
 				</Typography>
 			)}

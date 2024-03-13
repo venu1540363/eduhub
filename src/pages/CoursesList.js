@@ -1,44 +1,22 @@
 import React, { useState, useEffect } from "react";
 import Box from "@mui/material/Box";
-import { List, ListItemButton, ListItemText, Collapse, Button, Typography } from "@mui/material";
-import { KeyboardArrowRight, ExpandMore, Logout } from "@mui/icons-material";
+import { List, ListItemButton, ListItemText, Collapse, Typography } from "@mui/material";
+import { KeyboardArrowRight, ExpandMore } from "@mui/icons-material";
 import classes from "../assets/styles/courses";
 import { useTheme } from "@mui/material/styles";
-// import { useHistory } from "react-router-dom";
-import LinearProgressWithLabel from "./LinearProgressWithLabel";
+import LinearProgress from '@mui/material/LinearProgress';
 
-const CoursesList = ({ onSelectCourse }) => {
+const CoursesList = ({ onSelectCourse, selectedCorseProgress, selectedCourse }) => {
 	const theme = useTheme();
-	// const history = useHistory();
 	const [categories, setCategories] = useState([]);
 	const [courses, setCourses] = useState({});
 	const [openCategories, setOpenCategories] = useState({});
-	const [selectedCourse, setSelectedCourse] = useState(null);
 	const [courseProgress, setCourseProgress] = useState({});
-
-	const increment = (60 * 60) / 1000
-
-	useEffect(() => {
-		fetchCategories();
-		fetchCourses();
-	}, []);
+	const [showLoader, setShowLoader] = useState(false)
 
 	useEffect(() => {
-		const activeCourse = selectedCourse;
-		if (activeCourse) {
-			const timer = setInterval(() => {
-				setCourseProgress(prevProgress => ({
-					...prevProgress,
-					[activeCourse.uuid]: Math.min(
-						prevProgress[activeCourse.uuid] + increment, // Update by calculated increment
-						activeCourse.readTime
-					)
-				}));
-			}, 1000); // Update every second
-
-			return () => clearInterval(timer);
-		}
-	}, [selectedCourse]);
+		console.log("changed the progress", selectedCorseProgress)
+	})
 
 	const fetchCategories = async () => {
 		try {
@@ -61,9 +39,10 @@ const CoursesList = ({ onSelectCourse }) => {
 					formattedData[categoryId] = [];
 				}
 				formattedData[categoryId].push(course);
+				console.log(formattedData)
 			});
-			console.log("formattedData", formattedData)
 			setCourses(formattedData);
+			setShowLoader(false)
 		} catch (error) {
 			console.log("Error fetching courses:", error);
 		}
@@ -76,23 +55,29 @@ const CoursesList = ({ onSelectCourse }) => {
 		}));
 	};
 
-	// const handleSelectCourse = course => {
-	// 	// setSelectedCourse(course);
-	// 	setCourseProgress(prevProgress => ({
-	// 		...prevProgress,
-	// 		[course.uuid]: 0
-	// 	}));
-	// };
+	useEffect(() => {
+		setShowLoader(true)
+		fetchCategories();
+		setTimeout(() => {
+			fetchCourses();
+		}, 2000);
+		console.log("selected course changed", selectedCorseProgress)
+	}, [selectedCourse]);
 
-	const handleLogout = () => {
-		// Clear all state
-		setCategories([]);
-		setCourses({});
-		setOpenCategories({});
-		setSelectedCourse(null);
-		// Navigate to login screen
-		// history.push("/login"); // Change "/login" to your actual login route
-	};
+	function LinearProgressWithLabel(props) {
+		return (
+			<Box sx={{ display: 'flex', alignItems: 'center' }}>
+				<Box sx={{ width: '100%', mr: 1 }}>
+					<LinearProgress variant="determinate" {...props} />
+				</Box>
+				<Box sx={{ minWidth: 35 }}>
+					<Typography variant="body2" color="text.secondary">{`${Math.round(
+						props.value,
+					)}%`}</Typography>
+				</Box>
+			</Box>
+		);
+	}
 
 	return (
 		<Box container sx={{
@@ -119,16 +104,18 @@ const CoursesList = ({ onSelectCourse }) => {
 										<>
 											<ListItemButton
 												key={course.uuid}
-												sx={{ color: theme.colors.lightText }}
 												onClick={() => onSelectCourse(course)}
+												sx={{ color: theme.colors.lightText }}
 											>
-												<ListItemText primary={course.name} />
+												<ListItemText
+													primary={selectedCourse && selectedCourse.uuid === course.uuid ? <strong>{course.name}</strong> : course.name} />
 											</ListItemButton>
 											{
 												course.readTime <= courseProgress[course.uuid] ? (
 													<Typography variant="body2">Complete</Typography>
 												) : (
-													<LinearProgressWithLabel value={courseProgress[course.uuid] * 100 / course.readTime} />
+													showLoader ? <div>Loading...</div> :
+														<LinearProgressWithLabel value={selectedCourse && selectedCourse.uuid === course.uuid ? (selectedCorseProgress * 100) / course.readTime : (course.progress * 100) / course.readTime} />
 												)
 											}
 										</>
@@ -138,14 +125,6 @@ const CoursesList = ({ onSelectCourse }) => {
 					</Box>
 				))
 				}
-				{/* <Button
-					variant="text"
-					startIcon={<Logout />}
-					onClick={handleLogout}
-					sx={{ marginTop: "auto", color: "#000" }}
-				>
-					Logout
-				</Button> */}
 			</List >
 		</Box >
 	);

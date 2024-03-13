@@ -1,48 +1,36 @@
 import React, { useState, useEffect } from "react";
 import Box from "@mui/material/Box";
-import { Typography, Dialog, Button, TextField } from "@mui/material";
-import { PDFViewer } from "@react-pdf/renderer";
-import MyDocument from "../assets/Pdf";
+import { Typography, Dialog, Button } from "@mui/material";
 import classes from "../assets/styles/courses";
-import { ThemeContext } from "@emotion/react";
 import { useTheme } from "@mui/material/styles";
 
-const CoursesDashboard = ({ selectedCourse }) => {
+const CoursesDashboard = ({ selectedCourse, setSelectedCourseProgress }) => {
 	const theme = useTheme();
 	const [startTime, setStartTime] = useState(null);
 	const [endTime, setEndTime] = useState(null);
 	const [showPopup, setShowPopup] = useState(false);
-	const [uploadedFile, setUploadedFile] = useState(null);
+	const [timer, setTimer] = useState(selectedCourse?.readTime || null)
+	const [progress, setProgress] = useState(selectedCourse?.progress * 1000 || null)
+	const [prevCourseId, setPrevCourseId] = useState(selectedCourse?.uuid || null)
+	let myTimeout
+
 
 	useEffect(() => {
-		setStartTime(performance.now());
-
+		const myTimeout = setTimeout(() => {
+			if (timer && progress >= timer * 1000) {
+				setShowPopup(true)
+				saveProgressInDb()
+				setTimer(null)
+			}
+			else {
+				setProgress((progress) + 1000)
+				setSelectedCourseProgress(progress / 1000)
+			}
+		}, 1000);
 		return () => {
-			setEndTime(performance.now());
-		};
-	}, []);
-
-
-	useEffect(() => {
-		const handleBeforeUnload = () => {
-			setEndTime(performance.now());
-		};
-		window.addEventListener("beforeunload", handleBeforeUnload);
-
-		return () => {
-			window.removeEventListener("beforeunload", handleBeforeUnload);
-		};
-	}, []);
-
-	useEffect(() => {
-		if (selectedCourse) {
-			const timer = setTimeout(() => {
-				setShowPopup(true);
-			}, selectedCourse.readTime * 1000); // 1 hour
-
-			return () => clearTimeout(timer);
+			clearTimeout(myTimeout)
 		}
-	}, [startTime]);
+	}, [progress, timer])
 
 	const handleClosePopup = () => {
 		setShowPopup(false);
@@ -54,6 +42,35 @@ const CoursesDashboard = ({ selectedCourse }) => {
 			console.log("Time spent on this screen:", duration, "milliseconds");
 		}
 	};
+
+
+	const saveProgressInDb = async () => {
+		try {
+			const body = {
+				progress: progress / 1000
+			}
+			console.log(body, "body of put")
+			const response = await fetch(`http://localhost:5002/api/courses/edit/${prevCourseId}`, {
+				method: 'PUT',
+				headers: {
+					'Content-Type': 'application/json'
+				},
+				body: JSON.stringify(body)
+			})
+			const data = await response.json()
+			setPrevCourseId(selectedCourse.uuid)
+
+		} catch (err) {
+			console.log(err)
+		}
+	}
+
+	useEffect(() => {
+		saveProgressInDb()
+		setTimer(null)
+		clearTimeout(myTimeout);
+		selectedCourse ? setProgress(selectedCourse.progress * 1000) : setProgress(0)
+	}, [selectedCourse])
 
 	useEffect(() => {
 		calculateScreenTime();
@@ -79,7 +96,13 @@ const CoursesDashboard = ({ selectedCourse }) => {
 							{selectedCourse.description}
 						</Typography>
 					</Box>
-					<iframe src={selectedCourse.pdfUrl} style={{ width: '100%', height: '60%' }}></iframe>
+					<iframe src={selectedCourse.pdfUrl} style={{
+						width: "100%",
+						height: "100%",
+						boxSizing: "border-box",
+						padding: `0px ${theme.padding.medium}`,
+						border: "0px"
+					}}></iframe>
 				</Box>
 			) : (
 				<Typography variant="body1" sx={{ color: theme.colors.black }}>

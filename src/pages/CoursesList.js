@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from "react";
 import Box from "@mui/material/Box";
-import { List, ListItemButton, ListItemText, Collapse, Typography } from "@mui/material";
+import { List, ListItemButton, ListItemText, Collapse, Typography, Button } from "@mui/material";
 import { KeyboardArrowRight, ExpandMore } from "@mui/icons-material";
 import classes from "../assets/styles/courses";
 import { useTheme } from "@mui/material/styles";
 import LinearProgress from '@mui/material/LinearProgress';
+import LogoutRoundedIcon from '@mui/icons-material/LogoutRounded';
 
 const CoursesList = ({ onSelectCourse, selectedCorseProgress, selectedCourse }) => {
 	const theme = useTheme();
@@ -61,17 +62,27 @@ const CoursesList = ({ onSelectCourse, selectedCorseProgress, selectedCourse }) 
 		setTimeout(() => {
 			fetchCourses();
 		}, 2000);
-		console.log("selected course changed", selectedCorseProgress)
 	}, [selectedCourse]);
+
+	const handleLogout = () => {
+		// Your logout logic here
+		console.log("Logging out...");
+	};
 
 	function LinearProgressWithLabel(props) {
 		return (
 			<Box sx={{ display: 'flex', alignItems: 'center' }}>
 				<Box sx={{ width: '100%', mr: 1 }}>
-					<LinearProgress variant="determinate" {...props} />
+					<LinearProgress
+						variant="determinate"
+						sx={{
+							color: (theme) =>
+								theme.palette.grey[theme.palette.mode === 'light' ? 900 : 800],
+						}}
+						{...props} />
 				</Box>
 				<Box sx={{ minWidth: 35 }}>
-					<Typography variant="body2" color="text.secondary">{`${Math.round(
+					<Typography variant="body2" sx={{ color: theme.colors.whiteSmoke }}>{`${Math.round(
 						props.value,
 					)}%`}</Typography>
 				</Box>
@@ -83,14 +94,14 @@ const CoursesList = ({ onSelectCourse, selectedCorseProgress, selectedCourse }) 
 		<Box container sx={{
 			...classes.flex,
 			...classes.reportsList,
-			bgcolor: theme.colors.primary
+			bgcolor: theme.colors.secondary
 		}}>
 			<List sx={classes.container}>
 				{categories.map(category => (
 					<Box key={category.uuid}>
 						<ListItemButton
 							onClick={() => handleClickCategory(category.uuid)}
-							sx={{ color: theme.colors.black }}
+							sx={{ color: theme.colors.white }}
 						>
 							<ListItemText
 								primary={category.name}
@@ -105,7 +116,7 @@ const CoursesList = ({ onSelectCourse, selectedCorseProgress, selectedCourse }) 
 											<ListItemButton
 												key={course.uuid}
 												onClick={() => onSelectCourse(course)}
-												sx={{ color: theme.colors.lightText }}
+												sx={{ color: theme.colors.whiteSmoke }}
 											>
 												<ListItemText
 													primary={selectedCourse && selectedCourse.uuid === course.uuid ? <strong>{course.name}</strong> : course.name} />
@@ -114,8 +125,9 @@ const CoursesList = ({ onSelectCourse, selectedCorseProgress, selectedCourse }) 
 												course.readTime <= courseProgress[course.uuid] ? (
 													<Typography variant="body2">Complete</Typography>
 												) : (
-													showLoader ? <div>Loading...</div> :
-														<LinearProgressWithLabel value={selectedCourse && selectedCourse.uuid === course.uuid ? (selectedCorseProgress * 100) / course.readTime : (course.progress * 100) / course.readTime} />
+													showLoader ? <Typography sx={{ color: theme.colors.whiteSmoke }}>Loading...</Typography > :
+														<LinearProgressWithLabel
+															value={selectedCourse && selectedCourse.uuid === course.uuid ? (selectedCorseProgress * 100) / course.readTime : (course.progress * 100) / course.readTime} />
 												)
 											}
 										</>
@@ -126,6 +138,33 @@ const CoursesList = ({ onSelectCourse, selectedCorseProgress, selectedCourse }) 
 				))
 				}
 			</List >
+			<Box sx={{ padding: theme.padding.medium }}>
+				<Button onClick={handleLogout} sx={{
+					backgroundColor: theme.colors.secondary,
+					color: theme.colors.white,
+					border: `1px solid ${theme.colors.heading}`,
+					borderRadius: '4px',
+					letterSpacing: "2px",
+					padding: '8px 16px',
+					width: '100%',
+					transition: 'background-color 0.3s, color 0.3s',
+					'&:hover': {
+						color: theme.colors.black,
+						backgroundColor: theme.colors.primary, // Changed from 'bgcolor' to 'backgroundColor'
+						boxShadow: '0px 0px 5px rgba(0,0,0,0.3)', // Adding box-shadow on hover
+						transform: 'translateY(-2px)', // Adding translateY animation on hover
+					},
+					'&:active': {
+						backgroundColor: theme.colors.secondaryDark, // Changing color on active state
+					},
+					'&:focus': {
+						outline: 'none', // Removing focus outline
+					},
+				}}>
+					<LogoutRoundedIcon sx={{ pr: 1 }} />
+					Logout
+				</Button>
+			</Box>
 		</Box >
 	);
 };

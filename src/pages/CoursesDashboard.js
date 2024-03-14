@@ -77,20 +77,23 @@ const CoursesDashboard = ({ selectedCourse, setSelectedCourseProgress }) => {
 	}, [startTime, endTime]);
 
 	return (
-		<Box sx={{ ...classes.flex, ...classes.dashboard }}>
+		<Box sx={{
+			...classes.flex, ...classes.dashboard,
+			bgcolor: theme.colors.primary
+		}}>
 			{selectedCourse ? (
 				<Box>
 					<Box>
 						<Typography variant="h4" sx={{
 							borderBottom: "1px solid", borderColor: theme.colors.grey,
 							height: theme.padding.extreme, lineHeight: theme.padding.extreme,
-							color: theme.colors.heading, paddingLeft: theme.padding.medium,
+							color: theme.colors.secondary, paddingLeft: theme.padding.medium,
 							paddingRight: theme.padding.medium
 						}}>
 							{selectedCourse.name}
 						</Typography>
 						<Typography variant="body1" sx={{
-							color: theme.colors.text,
+							color: theme.colors.black,
 							padding: theme.padding.medium,
 						}}>
 							{selectedCourse.description}
@@ -105,7 +108,7 @@ const CoursesDashboard = ({ selectedCourse, setSelectedCourseProgress }) => {
 					}}></iframe>
 				</Box>
 			) : (
-				<Typography variant="body1" sx={{ color: theme.colors.black }}>
+				<Typography variant="body1" sx={{ ...classes.main, bgcolor: theme.colors.primary }}>
 					Please select a course from the list.
 				</Typography>
 			)}

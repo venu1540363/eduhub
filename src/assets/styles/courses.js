@@ -1,11 +1,12 @@
 const classes = {
 	flex: {
 		display: "flex",
-		height: "100vh"
 	},
 	reportsList: {
 		alignItems: "flex-start",
 		width: "20%",
+		flexDirection: "column",
+		justifyContent: "space-between"
 	},
 	dashboard: {
 		width: "80%",
@@ -14,7 +15,15 @@ const classes = {
 		overflowX: 'hidden'
 	},
 	container: {
-		width: "100%"
+		width: "100%",
+	},
+	main: {
+		display: "flex",
+		justifyContent: "center",
+		alignItems: "center",
+		width: "100%",
+		fontWeight: "5",
+		// bgcolor: "#495a7c"
 	}
 }
 

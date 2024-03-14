@@ -13,7 +13,7 @@ const App = () => {
   const theme = createTheme({
     colors: {
       primary: "#9cadce",
-      secondary: "#ffc107",
+      secondary: "#495a7c",
       background: "#fff",
       text: "#333",
       white: "#fff",
@@ -21,7 +21,8 @@ const App = () => {
       heading: "#5f80bf",
       grey: "#ccc",
       lightText: "#444",
-      dark: "#707e9a"
+      dark: "#707e9a",
+      whiteSmoke: "#F5F5F5"
     },
     fontSizes: {
       small: "14px",

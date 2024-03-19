@@ -14,10 +14,11 @@ import React, { useState } from "react";
 import classes from "../assets/styles/Login";
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 const ConfirmPasswordPage = () => {
 	const theme = useTheme();
+	const navigate = useNavigate()
 	const [password, setPassword] = useState("");
 	const [cnfpassword, setCnfPassword] = useState("");
 	const [showPassword, setShowPassword] = useState(false);
@@ -26,10 +27,14 @@ const ConfirmPasswordPage = () => {
 	const handleClickShowPassword = () => setShowPassword((show) => !show);
 	const handleClickShowCnfPassword = () => setShowCnfPassword((show) => !show);
 
+	const resetPassword = () => {
+		navigate("/login")
+	}
+
 	return (
 		<Container
 			maxWidth="xl"
-			sx={{ ...classes.container, bgcolor: theme.colors.primary }}
+			sx={{ ...classes.container, bgcolor: theme.colors.secondary }}
 		>
 			<Paper sx={classes.loginCard} elevation={10}>
 				<Typography sx={{ ...classes.title }}>Confirm Password</Typography>
@@ -46,7 +51,7 @@ const ConfirmPasswordPage = () => {
 							<InputAdornment position="end">
 								<IconButton
 									aria-label="toggle password visibility"
-									onClick={handleClickShowPassword}
+									onClick={() => handleClickShowPassword()}
 								>
 									{showPassword ? <VisibilityOff /> : <Visibility />}
 								</IconButton>
@@ -67,7 +72,7 @@ const ConfirmPasswordPage = () => {
 							<InputAdornment position="end">
 								<IconButton
 									aria-label="toggle password visibility"
-									onClick={handleClickShowCnfPassword}
+									onClick={() => handleClickShowCnfPassword()}
 								>
 									{showCnfPassword ? <VisibilityOff /> : <Visibility />}
 								</IconButton>
@@ -84,9 +89,7 @@ const ConfirmPasswordPage = () => {
 						"&:hover": { bgcolor: theme.colors.dark }
 					}}
 				>
-					<Link to="/login">
-						<Typography variant="inline">Save Password</Typography>
-					</Link>
+					<Typography variant="inline" onClick={() => resetPassword()}>Save Password</Typography>
 				</Button>
 			</Paper>
 		</Container>

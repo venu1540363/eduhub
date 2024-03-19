@@ -2,16 +2,43 @@ import { Container, Typography, Paper, TextField, Button } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
 import React, { useState } from "react";
 import classes from "../assets/styles/Login";
-import { Link } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
+import APIManager from "../API/ApiManager";
 
 const OtpVerificationPage = () => {
 	const theme = useTheme();
+	const [error, setError] = useState();
 	const [otp, setOtp] = useState("");
+	const location = useLocation();
+	const navigate = useNavigate();
+	const verifyOtp = async () => {
+		try {
+			const response = await fetch(APIManager.baseUrl + `users/verify-otp`, {
+				method: "POST",
+				headers: {
+					"Content-Type": "application/json"
+				},
+				body: JSON.stringify({ email: location.state.email, verificationCode: otp })
+			})
+			console.log(response)
+			const data = await response.json();
+			console.log(data)
+			if (response.ok) {
+				data.error && setError(data.error)
+				data.isValidated ?
+					navigate("/confirm-password") : setError(data.error || data.message)
+			} else {
+				setError(data.error)
+			}
+		} catch {
+			console.log("evds")
+		}
+	}
 
 	return (
 		<Container
 			maxWidth="xl"
-			sx={{ ...classes.container, bgcolor: theme.colors.primary }}
+			sx={{ ...classes.container, bgcolor: theme.colors.secondary }}
 		>
 			<Paper sx={classes.loginCard} elevation={10}>
 				<Typography sx={{ ...classes.title }}>Enter OTP</Typography>
@@ -31,9 +58,11 @@ const OtpVerificationPage = () => {
 						fontSize: theme.fontSizes.large,
 						"&:hover": { bgcolor: theme.colors.dark }
 					}}
+					onClick={() => verifyOtp()}
 				>
-					<Link to="/confirm-password">Validate Otp</Link>
+					Validate Otp
 				</Button>
+				{error && <Typography variant="caption" color="error">{error}</Typography>}
 			</Paper>
 		</Container>
 	);

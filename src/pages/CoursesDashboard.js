@@ -3,6 +3,7 @@ import Box from "@mui/material/Box";
 import { Typography, Dialog, Button } from "@mui/material";
 import classes from "../assets/styles/courses";
 import { useTheme } from "@mui/material/styles";
+import APIManager from "../API/ApiManager";
 
 const CoursesDashboard = ({ selectedCourse, setSelectedCourseProgress }) => {
 	const theme = useTheme();
@@ -50,7 +51,7 @@ const CoursesDashboard = ({ selectedCourse, setSelectedCourseProgress }) => {
 				progress: progress / 1000
 			}
 			console.log(body, "body of put")
-			const response = await fetch(`http://localhost:5002/api/courses/edit/${prevCourseId}`, {
+			const response = await fetch(APIManager.baseUrl + `courses/edit/${prevCourseId}`, {
 				method: 'PUT',
 				headers: {
 					'Content-Type': 'application/json'

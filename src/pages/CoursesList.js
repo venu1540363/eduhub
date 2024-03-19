@@ -6,9 +6,12 @@ import classes from "../assets/styles/courses";
 import { useTheme } from "@mui/material/styles";
 import LinearProgress from '@mui/material/LinearProgress';
 import LogoutRoundedIcon from '@mui/icons-material/LogoutRounded';
+import { useNavigate } from "react-router-dom";
+import APIManager from "../API/ApiManager";
 
 const CoursesList = ({ onSelectCourse, selectedCorseProgress, selectedCourse }) => {
 	const theme = useTheme();
+	const navigate = useNavigate();
 	const [categories, setCategories] = useState([]);
 	const [courses, setCourses] = useState({});
 	const [openCategories, setOpenCategories] = useState({});
@@ -21,7 +24,7 @@ const CoursesList = ({ onSelectCourse, selectedCorseProgress, selectedCourse }) 
 
 	const fetchCategories = async () => {
 		try {
-			const response = await fetch("http://localhost:5002/api/course_categories");
+			const response = await fetch(APIManager.baseUrl + `course_categories`);
 			const data = await response.json();
 			setCategories(data.response);
 		} catch (error) {
@@ -31,7 +34,7 @@ const CoursesList = ({ onSelectCourse, selectedCorseProgress, selectedCourse }) 
 
 	const fetchCourses = async () => {
 		try {
-			const response = await fetch("http://localhost:5002/api/courses");
+			const response = await fetch(APIManager.baseUrl + `courses`);
 			const data = await response.json();
 			let formattedData = {};
 			data.response.forEach(course => {
@@ -65,7 +68,8 @@ const CoursesList = ({ onSelectCourse, selectedCorseProgress, selectedCourse }) 
 	}, [selectedCourse]);
 
 	const handleLogout = () => {
-		// Your logout logic here
+		localStorage.clear()
+		navigate("/login");
 		console.log("Logging out...");
 	};
 

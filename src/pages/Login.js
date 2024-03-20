@@ -30,6 +30,10 @@ const Login = () => {
 
 	const handleClickShowPassword = () => setShowPassword((show) => !show);
 
+	const forgotPassword = () => {
+		navigate("/forgot-password")
+	}
+
 	const handleLogin = async () => {
 		let hasError = false;
 
@@ -122,12 +126,12 @@ const Login = () => {
 					/>
 					{passwordError && <Typography variant="caption" color="error">{passwordError}</Typography>}
 				</FormControl>
-				<Typography sx={classes.forgotContainer}>
-					<Link to="/forgot-password">
-						<Typography variant="inline" sx={{ color: theme.colors.primary }}>
-							Forgot Password?
-						</Typography>
-					</Link>
+				<Typography sx={classes.forgotContainer} onClick={() => forgotPassword()}>
+					<Typography variant="inline" sx={{ color: theme.colors.primary }}>
+						Forgot Password?
+					</Typography>
+					{/* <Link to="/forgot-password">
+					</Link> */}
 				</Typography>
 				{error && (
 					<Typography color="error" sx={{ marginBottom: 2 }}>

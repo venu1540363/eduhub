@@ -101,7 +101,7 @@ const CoursesList = ({ onSelectCourse, selectedCorseProgress, selectedCourse }) 
 			bgcolor: theme.colors.secondary
 		}}>
 			<List sx={classes.container}>
-				{categories.map(category => (
+				{categories && categories.map(category => (
 					<Box key={category.uuid}>
 						<ListItemButton
 							onClick={() => handleClickCategory(category.uuid)}

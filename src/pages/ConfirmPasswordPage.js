@@ -14,11 +14,13 @@ import React, { useState } from "react";
 import classes from "../assets/styles/Login";
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
+import APIManager from "../API/ApiManager";
 
 const ConfirmPasswordPage = () => {
 	const theme = useTheme();
 	const navigate = useNavigate()
+	const location = useLocation()
 	const [password, setPassword] = useState("");
 	const [cnfpassword, setCnfPassword] = useState("");
 	const [showPassword, setShowPassword] = useState(false);
@@ -27,9 +29,42 @@ const ConfirmPasswordPage = () => {
 	const handleClickShowPassword = () => setShowPassword((show) => !show);
 	const handleClickShowCnfPassword = () => setShowCnfPassword((show) => !show);
 
-	const resetPassword = () => {
-		navigate("/login")
-	}
+	const resetPassword = async () => {
+		console.log(password)
+		console.log(cnfpassword)
+		console.log(location.state.email)
+
+		if (password !== cnfpassword) {
+			console.error('New password and confirm password do not match');
+			// return;
+		}
+		else {
+			try {
+				const response = await fetch(APIManager.baseUrl + `users/reset-password`, {
+					method: "PUT",
+					headers: {
+						"Content-Type": "application/json"
+					},
+					body: JSON.stringify({ email: location.state.email, newPassword: password })
+				})
+				console.log(location.state.email)
+				console.log(response)
+				const data = await response.json();
+				console.log(data)
+				if (response.ok) {
+					// data.error && setError(data.error)
+					// data.isValidated ?
+					navigate("/login")
+					// : setError(data.error || data.message)
+				} else {
+					console.error(response.error);
+				}
+			} catch (error) {
+				console.log("evds", error)
+			}
+		}
+
+	};
 
 	return (
 		<Container

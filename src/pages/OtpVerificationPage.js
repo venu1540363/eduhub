@@ -26,7 +26,7 @@ const OtpVerificationPage = () => {
 			if (response.ok) {
 				data.error && setError(data.error)
 				data.isValidated ?
-					navigate("/confirm-password") : setError(data.error || data.message)
+					navigate("/confirm-password", { state: { email: location.state.email } }) : setError(data.error || data.message)
 			} else {
 				setError(data.error)
 			}
